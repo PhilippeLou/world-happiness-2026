@@ -76,6 +76,11 @@ with col1:
             len(df)
         )
 
+        st.markdown(
+            "<div style='height: 176px;'></div>",
+            unsafe_allow_html=True
+        )
+
 
 # -----------------------------------------------------------------------------
 # KPI 2: Average Happiness Score
@@ -149,3 +154,8 @@ with col4:
             ),
             use_container_width=False
         )
+
+        st.markdown(
+                    "<div style='height: 28px;'></div>",
+                    unsafe_allow_html=True
+                )
