@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from data_cleaning import load_and_clean_data
 import seaborn as sns
+import plotly.express as px
 
 st.set_page_config(
     page_title="World Happiness Report 2026",
