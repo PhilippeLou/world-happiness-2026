@@ -10,12 +10,27 @@ st.set_page_config(
 )
 
 # -----------------------------------------------------------------------------
+# Main Content Width
+# -----------------------------------------------------------------------------
+
+st.markdown("""
+<style>
+.block-container {
+    max-width: 1200px;
+    margin: auto;
+}
+</style>
+""", unsafe_allow_html=True)
+
+
+# -----------------------------------------------------------------------------
 # Load Data
 # -----------------------------------------------------------------------------
 
 df = load_and_clean_data(
     "data/world_happiness_Update_report_2026.csv"
 )
+
 
 # -----------------------------------------------------------------------------
 # Title
@@ -29,6 +44,7 @@ st.write(
 )
 
 st.divider()
+
 
 # -----------------------------------------------------------------------------
 # Part I: Overview
@@ -77,7 +93,7 @@ with col1:
         )
 
         st.markdown(
-            "<div style='height: 176px;'></div>",
+            "<div style='height: 122px;'></div>",
             unsafe_allow_html=True
         )
 
@@ -156,6 +172,6 @@ with col4:
         )
 
         st.markdown(
-                    "<div style='height: 28px;'></div>",
-                    unsafe_allow_html=True
-                )
+            "<div style='height: 28px;'></div>",
+            unsafe_allow_html=True
+        )
