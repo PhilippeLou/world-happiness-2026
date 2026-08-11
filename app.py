@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 from data_cleaning import load_and_clean_data
+import seaborn as sns
 
 st.set_page_config(
     page_title="World Happiness Report 2026",
@@ -175,3 +176,17 @@ with col4:
             "<div style='height: 28px;'></div>",
             unsafe_allow_html=True
         )
+
+
+
+# -----------------------------------------------------------------------------
+# Part II: What Drives Happiness
+# -----------------------------------------------------------------------------
+
+st.header("Part II: What Drives Happiness")
+
+st.write(
+    "Which factors are most closely tied to a country's happiness score? "
+    "The heatmap below shows how strongly each factor correlates with the overall score — "
+    "values closer to 1 indicate a stronger positive relationship."
+)
