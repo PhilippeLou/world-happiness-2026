@@ -53,11 +53,23 @@ st.write(
 st.divider()
 
 
+
 # -----------------------------------------------------------------------------
 # Part I: Overview
 # -----------------------------------------------------------------------------
 
+
+
 st.header("Part I: Overview")
+
+st.write(
+    "**What does the global happiness landscape look like across the 147 countries?** "
+    "This overview establishes the baseline for the analysis by looking at the "
+    "overall happiness score, the highest-scoring country, the number of countries "
+    "covered, and their average GDP per capita. These indicators provide a starting "
+    "point for understanding how happiness varies across countries before examining "
+    "the factors that may explain these differences."
+)
 
 
 # -----------------------------------------------------------------------------
@@ -252,6 +264,10 @@ with col4:
                 )
 
 
+st.write("")
+st.write("")
+st.write("")
+
 # -----------------------------------------------------------------------------
 # Part II: What Drives Happiness
 # -----------------------------------------------------------------------------
@@ -372,7 +388,9 @@ st.write(
     "prosperity alone does not fully explain differences in national happiness."
 )
 
-
+st.write("")
+st.write("")
+st.write("")
 
 # -----------------------------------------------------------------------------
 # Part III: Overperformers & Underperformers
@@ -476,6 +494,10 @@ with col_right:
         top_under[["country", "score", "gdp_per_capita", "residual"]],
         hide_index=True,
     )
+
+st.write("")
+st.write("")
+st.write("")
 
 
 # -----------------------------------------------------------------------------
