@@ -8,6 +8,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import altair as alt
 import numpy as np
+from vega_datasets import data
 
 st.set_page_config(
     page_title="World Happiness Report 2026",
@@ -397,5 +398,165 @@ with col_right:
     )
 
 
+# -----------------------------------------------------------------------------
+# Part IV
+# -----------------------------------------------------------------------------
 
-st.dataframe(df[["country", "iso_numeric"]])
+
+
+st.header("Part IV: Explore Any Country")
+
+st.write(
+    "Select a country to see its happiness score, global rank, and how it scores "
+    "across each of the six contributing factors relative to all 147 countries."
+)
+
+# -----------------------------------------------------------------------------
+# Normalize factors to 0-1 scale
+# -----------------------------------------------------------------------------
+
+factor_list = [
+    "social_support",
+    "freedom",
+    "healthy_life_expectancy",
+    "gdp_per_capita",
+    "generosity",
+    "corruption",
+]
+
+for col in factor_list:
+    min_val = df[col].min()
+    max_val = df[col].max()
+
+    df[f"{col}_norm"] = (
+        (df[col] - min_val) /
+        (max_val - min_val)
+    )
+
+# -----------------------------------------------------------------------------
+# Country selector
+# -----------------------------------------------------------------------------
+
+country_list = sorted(df["country"].unique())
+
+default_index = (
+    country_list.index("Philippines")
+    if "Philippines" in country_list
+    else 0
+)
+
+selected_country = st.selectbox(
+    "Select Country:",
+    country_list,
+    index=default_index
+)
+
+country_row = df[
+    df["country"] == selected_country
+].iloc[0]
+
+# -----------------------------------------------------------------------------
+# KPI Header
+# -----------------------------------------------------------------------------
+
+col1, col2 = st.columns(2)
+
+with col1:
+    st.metric(
+        "Happiness Score",
+        f"{country_row['score']:.2f}"
+    )
+
+with col2:
+    st.metric(
+        "Global Rank",
+        f"#{int(country_row['rank'])}"
+    )
+
+# -----------------------------------------------------------------------------
+# Factor Labels
+# -----------------------------------------------------------------------------
+
+factor_labels = {
+    "social_support": "Social Support",
+    "freedom": "Freedom",
+    "healthy_life_expectancy": "Healthy Life Expectancy",
+    "gdp_per_capita": "GDP",
+    "generosity": "Generosity",
+    "corruption": "Corruption",
+}
+
+# Create the sorting list separately
+factor_list_labels = [
+    factor_labels[f]
+    for f in factor_list
+]
+
+# -----------------------------------------------------------------------------
+# Factor Bar Chart
+# -----------------------------------------------------------------------------
+
+bar_data = pd.DataFrame({
+    "Factor": [
+        factor_labels[f]
+        for f in factor_list
+    ],
+
+    "Normalized Value": [
+        country_row[f"{f}_norm"]
+        for f in factor_list
+    ],
+
+    "Raw Value": [
+        country_row[f]
+        for f in factor_list
+    ],
+})
+
+BLUE = "#1CBCF5"
+
+factor_bar = (
+    alt.Chart(bar_data)
+    .mark_bar(color=BLUE)
+    .encode(
+        y=alt.Y(
+            "Factor:N",
+            sort=factor_list_labels,
+            title=None
+        ),
+
+        x=alt.X(
+            "Normalized Value:Q",
+            scale=alt.Scale(domain=[0, 1]),
+            title="Relative Standing (0-1)"
+        ),
+
+        tooltip=[
+            alt.Tooltip(
+                "Factor:N",
+                title="Factor"
+            ),
+
+            alt.Tooltip(
+                "Raw Value:Q",
+                format=".3f",
+                title="Raw Value"
+            ),
+
+            alt.Tooltip(
+                "Normalized Value:Q",
+                format=".2f",
+                title="Relative Score"
+            ),
+        ],
+    )
+    .properties(
+        height=280
+    )
+)
+
+st.altair_chart(
+    factor_bar,
+    use_container_width=True
+)
+
