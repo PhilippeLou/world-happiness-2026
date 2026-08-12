@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 from data_cleaning import load_and_clean_data
 import seaborn as sns
 import plotly.express as px
+import plotly.graph_objects as go
+import altair as alt
 
 st.set_page_config(
     page_title="World Happiness Report 2026",
@@ -209,25 +211,58 @@ st.write(
     "and perceptions of corruption typically show weaker correlations."
 )
 
+BLUE = "#1C8CF5"  # matches the reference image's blue
+
 st.subheader("GDP per Capita vs. Happiness Score")
 
-fig2, ax2 = plt.subplots(figsize=(8, 5))
-ax2.scatter(df["gdp_per_capita"], df["score"], alpha=0.6, color="steelblue")
+left_col, right_col = st.columns([2, 1])
 
-# simple linear trend line
-import numpy as np
-z = np.polyfit(df["gdp_per_capita"], df["score"], 1)
-trend = np.poly1d(z)
-x_range = np.linspace(df["gdp_per_capita"].min(), df["gdp_per_capita"].max(), 100)
-ax2.plot(x_range, trend(x_range), color="red", linewidth=2, label="Trend line")
+with left_col:
+    scatter_fig = px.scatter(
+        df,
+        x="gdp_per_capita",
+        y="score",
+        hover_name="country",
+        hover_data={"gdp_per_capita": ":.3f", "score": ":.2f"},
+        trendline="ols",
+        color_discrete_sequence=[BLUE],
+        opacity=0.7,
+    )
+    scatter_fig.update_traces(marker=dict(size=9))
+    scatter_fig.update_layout(
+        xaxis_title="GDP per Capita",
+        yaxis_title="Happiness Score",
+        height=520,
+    )
+    st.plotly_chart(scatter_fig, use_container_width=True)
 
-ax2.set_xlabel("GDP per Capita")
-ax2.set_ylabel("Happiness Score")
-ax2.legend()
-st.pyplot(fig2)
+with right_col:
+    gdp_hist = px.histogram(
+        df,
+        x="gdp_per_capita",
+        nbins=10,
+        color_discrete_sequence=[BLUE],
+    )
+    gdp_hist.update_layout(
+        title="GDP per Capita Distribution",
+        xaxis_title="GDP per Capita (binned)",
+        yaxis_title="Countries",
+        height=250,
+        margin=dict(t=40, b=30),
+    )
+    st.plotly_chart(gdp_hist, use_container_width=True)
 
-st.write(
-    "While wealth is clearly linked to happiness, the relationship isn't perfect — "
-    "some countries score higher or lower than their GDP alone would predict. "
-    "We'll explore exactly which countries in Part III."
-)
+    score_hist = px.histogram(
+        df,
+        x="score",
+        nbins=10,
+        color_discrete_sequence=[BLUE],
+    )
+    score_hist.update_layout(
+        title="Happiness Score Distribution",
+        xaxis_title="Score (binned)",
+        yaxis_title="Countries",
+        height=250,
+        margin=dict(t=40, b=30),
+    )
+    st.plotly_chart(score_hist, use_container_width=True)
