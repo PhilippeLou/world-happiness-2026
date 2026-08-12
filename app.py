@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 from data_cleaning import load_and_clean_data
+from data_cleaning import add_iso_codes
 import seaborn as sns
 import plotly.express as px
 import plotly.graph_objects as go
@@ -35,6 +36,8 @@ st.markdown("""
 df = load_and_clean_data(
     "data/world_happiness_Update_report_2026.csv"
 )
+
+df = add_iso_codes(df)
 
 
 # -----------------------------------------------------------------------------
@@ -392,3 +395,7 @@ with col_right:
         top_under[["country", "score", "gdp_per_capita", "residual"]],
         hide_index=True,
     )
+
+
+
+st.dataframe(df[["country", "iso_numeric"]])
