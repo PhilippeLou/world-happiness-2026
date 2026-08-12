@@ -46,8 +46,9 @@ df = add_iso_codes(df)
 st.title("World Happiness Report 2026 🌍")
 
 st.write(
-    "An exploration of what drives happiness across 147 countries, "
-    "based on the Gallup World Poll (2023–2025 averages)."
+    "An exploration of what drives happiness across "
+    "147 countries, based on the World Happiness "
+    "Update Report 2026, released on March 20, 2026, using Gallup World Poll data from 2023–2025."
 )
 
 st.divider()
@@ -275,14 +276,18 @@ st.write("")
 st.header("Part II: What Drives Happiness")
 
 st.write(
-    "**Which factors are most closely tied to a country's happiness score?** "
-    "The heatmap below shows how strongly each factor correlates with the overall score — "
-    "values closer to 1 indicate a stronger positive relationship, while values closer to -1 indicate a stronger negative relationship."
+    "**What factors are most strongly associated with happiness?** " \
+    "Economic prosperity, social support, healthy life expectancy, "
+    "and freedom to make life choices show stronger relationships with " \
+    "happiness, while generosity and perceptions of corruption have " \
+    "weaker associations. These relationships provide a starting point "
+    "for understanding which factors are most closely connected to differences in happiness across countries."
 )
+
+st.write("")
 
 BLUE = "#1CBCF5"
 
-st.subheader("Correlation Heatmap")
 
 factor_cols = [
     "score", "gdp_per_capita", "social_support",
@@ -400,11 +405,14 @@ st.write("")
 st.header("Part III: Overperformers & Underperformers")
 
 st.write(
-    "GDP per capita is strongly associated with happiness, but it does not fully explain differences between countries "
+    "**GDP per capita** "
+    "is strongly associated with happiness, but it does not fully explain differences between countries "
     "Using a simple linear regression, we can predict each country's expected happiness "
     "score based on its wealth alone — and then see which countries beat that expectation, "
     "and which fall short."
 )
+
+st.write("")
 
 # --- Fit linear regression ---
 x = df["gdp_per_capita"].to_numpy()
@@ -446,6 +454,8 @@ with col4:
     biggest_under["country"],
     f"{biggest_under['residual']:.2f}"
 )
+
+st.write("")
 
 # --- Color-coded scatter with trend line ---
 BLUE = "#1CBCF5"
