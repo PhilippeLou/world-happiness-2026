@@ -194,16 +194,43 @@ st.write(
     "values closer to 1 indicate a stronger positive relationship."
 )
 
+BLUE = "#1CBCF5"
+
+st.subheader("Correlation Heatmap")
+
 factor_cols = [
     "score", "gdp_per_capita", "social_support",
     "healthy_life_expectancy", "freedom", "generosity", "corruption"
 ]
 
-corr = df[factor_cols].corr()
+corr = df[factor_cols].corr().reset_index().melt(id_vars="index")
+corr.columns = ["Variable 1", "Variable 2", "Correlation"]
 
-fig, ax = plt.subplots(figsize=(7, 5))
-sns.heatmap(corr, annot=True, cmap="Blues", fmt=".2f", ax=ax)
-st.pyplot(fig)
+heatmap = alt.Chart(corr).mark_rect().encode(
+    x=alt.X("Variable 1:N", title=None),
+    y=alt.Y("Variable 2:N", title=None),
+    color=alt.Color(
+        "Correlation:Q",
+        scale=alt.Scale(scheme="blues"),
+        legend=alt.Legend(title="Correlation"),
+    ),
+    tooltip=[
+        alt.Tooltip("Variable 1:N"),
+        alt.Tooltip("Variable 2:N"),
+        alt.Tooltip("Correlation:Q", format=".2f"),
+    ],
+).properties(height=400)
+
+text = alt.Chart(corr).mark_text(baseline="middle").encode(
+    x="Variable 1:N",
+    y="Variable 2:N",
+    text=alt.Text("Correlation:Q", format=".2f"),
+    color=alt.condition(
+        alt.datum.Correlation > 0.5, alt.value("white"), alt.value("black")
+    ),
+)
+
+st.altair_chart(heatmap + text, use_container_width=True)
 
 st.write(
     "GDP per capita, social support, and healthy life expectancy tend to show "
