@@ -61,21 +61,70 @@ st.header("Part I: Overview")
 
 
 # -----------------------------------------------------------------------------
-# Sparkline / Distribution Chart
+# Distribution Sparkline
 # -----------------------------------------------------------------------------
 
-def draw_sparkline(data, color):
-    fig, ax = plt.subplots(figsize=(2, 0.6))
+def draw_distribution(data, column, color="#1CBCF5", bins=14):
 
-    ax.hist(
-        data,
-        bins=15,
-        color=color,
-        alpha=0.4
+    values = data[column].dropna()
+
+    counts, edges = np.histogram(
+        values,
+        bins=bins
     )
 
-    ax.axis("off")
-    fig.patch.set_alpha(0)
+    centers = (edges[:-1] + edges[1:]) / 2
+
+    distribution_df = pd.DataFrame({
+        "value": centers,
+        "count": counts,
+        "lower": edges[:-1],
+        "upper": edges[1:]
+    })
+
+    fig = px.line(
+        distribution_df,
+        x="value",
+        y="count",
+        markers=True
+    )
+
+    fig.update_traces(
+        line=dict(
+            color=color,
+            width=2
+        ),
+        marker=dict(
+            size=4
+        ),
+        customdata=distribution_df[
+            ["lower", "upper"]
+        ],
+        hovertemplate=(
+            "<b>%{customdata[0]:.2f} – %{customdata[1]:.2f}</b><br>"
+            "Countries: %{y}"
+            "<extra></extra>"
+        )
+    )
+
+    fig.update_layout(
+        height=80,
+        margin=dict(
+            l=5,
+            r=5,
+            t=5,
+            b=5
+        ),
+        xaxis=dict(
+            visible=False
+        ),
+        yaxis=dict(
+            visible=False
+        ),
+        showlegend=False,
+        plot_bgcolor="rgba(0,0,0,0)",
+        paper_bgcolor="rgba(0,0,0,0)",
+    )
 
     return fig
 
@@ -99,6 +148,7 @@ with col1:
             len(df)
         )
 
+        # Keep card height consistent with the other KPIs
         st.markdown(
             "<div style='height: 122px;'></div>",
             unsafe_allow_html=True
@@ -121,12 +171,18 @@ with col2:
             f"{delta:+.2f} vs. scale midpoint (5.0)"
         )
 
-        st.pyplot(
-            draw_sparkline(
-                df["score"],
-                "green"
-            ),
-            use_container_width=False
+        fig_score = draw_distribution(
+            df,
+            "score",
+            "#1CBCF5",
+            bins=14
+        )
+
+        st.plotly_chart(
+            fig_score,
+            use_container_width=True,
+            config={"displayModeBar": False},
+            key="average_happiness_distribution"
         )
 
 
@@ -142,17 +198,23 @@ with col3:
         ]
 
         st.metric(
-            "Highest Score",
+            "Highest Happiness Score",
             f"{top_country['score']:.2f}",
             top_country["country"]
         )
 
-        st.pyplot(
-            draw_sparkline(
-                df["score"],
-                "green"
-            ),
-            use_container_width=False
+        fig_top_score = draw_distribution(
+            df,
+            "score",
+            "#1CBCF5",
+            bins=14
+        )
+
+        st.plotly_chart(
+            fig_top_score,
+            use_container_width=True,
+            config={"displayModeBar": False},
+            key="highest_happiness_distribution"
         )
 
 
@@ -170,19 +232,24 @@ with col4:
             f"{avg_gdp:.3f}"
         )
 
-        st.pyplot(
-            draw_sparkline(
-                df["gdp_per_capita"],
-                "steelblue"
-            ),
-            use_container_width=False
+        fig_gdp = draw_distribution(
+            df,
+            "gdp_per_capita",
+            "#1CBCF5",
+            bins=14
+        )
+
+        st.plotly_chart(
+            fig_gdp,
+            use_container_width=True,
+            config={"displayModeBar": False},
+            key="average_gdp_distribution"
         )
 
         st.markdown(
-            "<div style='height: 28px;'></div>",
-            unsafe_allow_html=True
-        )
-
+                    "<div style='height: 26px;'></div>",
+                    unsafe_allow_html=True
+                )
 
 
 # -----------------------------------------------------------------------------
