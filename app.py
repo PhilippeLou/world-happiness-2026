@@ -6,6 +6,7 @@ import seaborn as sns
 import plotly.express as px
 import plotly.graph_objects as go
 import altair as alt
+import numpy as np
 
 st.set_page_config(
     page_title="World Happiness Report 2026",
@@ -293,3 +294,101 @@ with right_col:
         margin=dict(t=40, b=30),
     )
     st.plotly_chart(score_hist, use_container_width=True)
+
+
+
+# -----------------------------------------------------------------------------
+# Part III: Overperformers & Underperformers
+# -----------------------------------------------------------------------------
+
+
+st.header("Part III: Overperformers & Underperformers")
+
+st.write(
+    "GDP per capita is a strong predictor of happiness, but it's not the whole story. "
+    "Using a simple linear regression, we can predict each country's expected happiness "
+    "score based on its wealth alone — and then see which countries beat that expectation, "
+    "and which fall short."
+)
+
+# --- Fit linear regression ---
+x = df["gdp_per_capita"].to_numpy()
+y = df["score"].to_numpy()
+
+slope, intercept = np.polyfit(x, y, 1)
+df["predicted_score"] = slope * df["gdp_per_capita"] + intercept
+df["residual"] = df["score"] - df["predicted_score"]
+
+std_dev = df["residual"].std()
+
+def classify(residual):
+    if residual > std_dev:
+        return "Overperformer"
+    elif residual < -std_dev:
+        return "Underperformer"
+    else:
+        return "In Range"
+
+df["status"] = df["residual"].apply(classify)
+
+# --- KPI row ---
+col1, col2, col3 = st.columns(3)
+
+overperformers = df[df["status"] == "Overperformer"]
+underperformers = df[df["status"] == "Underperformer"]
+
+with col1:
+    st.metric("Overperformers", len(overperformers))
+with col2:
+    st.metric("Underperformers", len(underperformers))
+with col3:
+    biggest_over = overperformers.loc[overperformers["residual"].idxmax()]
+    st.metric("Biggest Overperformer", biggest_over["country"], f"+{biggest_over['residual']:.2f}")
+
+# --- Color-coded scatter with trend line ---
+BLUE = "#1CBCF5"
+GREEN = "#2ECC71"
+ORANGE = "#E67E22"
+
+status_colors = alt.Scale(
+    domain=["Overperformer", "In Range", "Underperformer"],
+    range=[GREEN, BLUE, ORANGE],
+)
+
+scatter = alt.Chart(df).mark_circle(size=90, opacity=0.75).encode(
+    x=alt.X("gdp_per_capita:Q", title="GDP per Capita"),
+    y=alt.Y("score:Q", title="Happiness Score"),
+    color=alt.Color("status:N", scale=status_colors, title="Status"),
+    tooltip=[
+        alt.Tooltip("country:N", title="Country"),
+        alt.Tooltip("gdp_per_capita:Q", title="GDP per Capita", format=".3f"),
+        alt.Tooltip("score:Q", title="Score", format=".2f"),
+        alt.Tooltip("status:N", title="Status"),
+    ],
+)
+
+trend_line = alt.Chart(df).mark_line(color="gray", strokeDash=[4, 4]).encode(
+    x="gdp_per_capita:Q",
+    y="predicted_score:Q",
+)
+
+st.altair_chart((scatter + trend_line).properties(height=500), use_container_width=True)
+
+# --- Ranked tables ---
+col_left, col_right = st.columns(2)
+
+with col_left:
+    st.subheader("🏆 Top 10 Overperformers")
+    top_over = overperformers.sort_values("residual", ascending=False).head(10)
+    st.dataframe(
+        top_over[["country", "score", "gdp_per_capita", "residual"]],
+        hide_index=True,
+    )
+
+with col_right:
+    st.subheader("📉 Top 10 Underperformers")
+    top_under = underperformers.sort_values("residual").head(10)
+    st.dataframe(
+        top_under[["country", "score", "gdp_per_capita", "residual"]],
+        hide_index=True,
+    )
