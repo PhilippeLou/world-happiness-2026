@@ -3,9 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from data_cleaning import load_and_clean_data
 from data_cleaning import add_iso_codes
-import seaborn as sns
 import plotly.express as px
-import plotly.graph_objects as go
 import altair as alt
 import numpy as np
 from vega_datasets import data
@@ -309,7 +307,7 @@ with right_col:
 st.header("Part III: Overperformers & Underperformers")
 
 st.write(
-    "GDP per capita is a strong predictor of happiness, but it's not the whole story. "
+    "GDP per capita is strongly associated with happiness, but it does not fully explain differences between countries "
     "Using a simple linear regression, we can predict each country's expected happiness "
     "score based on its wealth alone — and then see which countries beat that expectation, "
     "and which fall short."
@@ -382,7 +380,7 @@ st.altair_chart((scatter + trend_line).properties(height=500), use_container_wid
 col_left, col_right = st.columns(2)
 
 with col_left:
-    st.subheader("🏆 Top 10 Overperformers")
+    st.subheader("Top 10 Overperformers")
     top_over = overperformers.sort_values("residual", ascending=False).head(10)
     st.dataframe(
         top_over[["country", "score", "gdp_per_capita", "residual"]],
@@ -390,7 +388,7 @@ with col_left:
     )
 
 with col_right:
-    st.subheader("📉 Top 10 Underperformers")
+    st.subheader("Top 10 Underperformers")
     top_under = underperformers.sort_values("residual").head(10)
     st.dataframe(
         top_under[["country", "score", "gdp_per_capita", "residual"]],
