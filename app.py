@@ -192,9 +192,9 @@ with col4:
 st.header("Part II: What Drives Happiness")
 
 st.write(
-    "Which factors are most closely tied to a country's happiness score? "
+    "**Which factors are most closely tied to a country's happiness score?** "
     "The heatmap below shows how strongly each factor correlates with the overall score — "
-    "values closer to 1 indicate a stronger positive relationship."
+    "values closer to 1 indicate a stronger positive relationship, while values closer to -1 indicate a stronger negative relationship."
 )
 
 BLUE = "#1CBCF5"
@@ -298,6 +298,14 @@ with right_col:
     st.plotly_chart(score_hist, use_container_width=True)
 
 
+st.write(
+    "GDP per capita shows a clear positive relationship with happiness, " \
+    "although countries with similar levels of economic prosperity can " \
+    "have noticeably different happiness scores. This suggests that economic" \
+    "prosperity alone does not fully explain differences in national happiness."
+)
+
+
 
 # -----------------------------------------------------------------------------
 # Part III: Overperformers & Underperformers
@@ -334,7 +342,7 @@ def classify(residual):
 df["status"] = df["residual"].apply(classify)
 
 # --- KPI row ---
-col1, col2, col3 = st.columns(3)
+col1, col2, col3, col4 = st.columns(4)
 
 overperformers = df[df["status"] == "Overperformer"]
 underperformers = df[df["status"] == "Underperformer"]
@@ -346,6 +354,13 @@ with col2:
 with col3:
     biggest_over = overperformers.loc[overperformers["residual"].idxmax()]
     st.metric("Biggest Overperformer", biggest_over["country"], f"+{biggest_over['residual']:.2f}")
+with col4:
+    biggest_under = underperformers.loc[underperformers["residual"].idxmin()]
+    st.metric(
+    "Biggest Underperformer",
+    biggest_under["country"],
+    f"{biggest_under['residual']:.2f}"
+)
 
 # --- Color-coded scatter with trend line ---
 BLUE = "#1CBCF5"
@@ -405,8 +420,8 @@ with col_right:
 st.header("Part IV: Explore Any Country")
 
 st.write(
-    "Select a country to see its happiness score, global rank, and how it scores "
-    "across each of the six contributing factors relative to all 147 countries."
+    "Select a country to see its happiness score, global rank, "
+    "and how it scores across each of the six contributing factors relative to all 147 countries."
 )
 
 # -----------------------------------------------------------------------------
@@ -526,7 +541,7 @@ factor_bar = (
         x=alt.X(
             "Normalized Value:Q",
             scale=alt.Scale(domain=[0, 1]),
-            title="Relative Standing (0-1)"
+            title="Min-max normalization (0-1)"
         ),
 
         tooltip=[
