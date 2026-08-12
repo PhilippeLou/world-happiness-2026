@@ -560,3 +560,67 @@ st.altair_chart(
     use_container_width=True
 )
 
+# -----------------------------------------------------------------------------
+# World Map
+# -----------------------------------------------------------------------------
+
+st.subheader("Global Happiness Map")
+
+world = alt.topo_feature(
+    data.world_110m.url,
+    "countries"
+)
+
+world_map = (
+    alt.Chart(world)
+    .mark_geoshape(
+        stroke="white",
+        strokeWidth=0.5
+    )
+    .encode(
+        color=alt.Color(
+            "score:Q",
+            scale=alt.Scale(
+                scheme="blues"
+            ),
+            title="Happiness Score"
+        ),
+
+        tooltip=[
+            alt.Tooltip(
+                "country:N",
+                title="Country"
+            ),
+
+            alt.Tooltip(
+                "score:Q",
+                title="Happiness Score",
+                format=".2f"
+            ),
+        ],
+    )
+    .transform_lookup(
+        lookup="id",
+
+        from_=alt.LookupData(
+            df,
+            "iso_numeric",
+            [
+                "country",
+                "score"
+            ]
+        )
+    )
+    .project(
+        "naturalEarth1"
+    )
+    .properties(
+        width=900,
+        height=450
+    )
+)
+
+st.altair_chart(
+    world_map,
+    use_container_width=True
+)
