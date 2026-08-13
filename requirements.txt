@@ -3,7 +3,8 @@ pandas
 matplotlib
 seaborn
 plotly
-numpy
+statsmodels
 pycountry
 altair
+numpy
 vega-datasets
