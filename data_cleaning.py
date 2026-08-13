@@ -11,11 +11,11 @@ def load_and_clean_data(filepath):
 def add_iso_codes(df):
 
     country_mapping = {
-        "Ivory Coast": 384,                  # Côte d'Ivoire
-        "Turkey": 792,                       # Türkiye
-        "Palestinian Territories": 275,      # Palestine
-        "DR Congo": 180,                     # Democratic Republic of the Congo
-        "Congo DR": 180,                     # Democratic Republic of the Congo
+        "Ivory Coast": 384,                
+        "Turkey": 792,                      
+        "Palestinian Territories": 275,     
+        "DR Congo": 180,                  
+        "Congo DR": 180,                     
     }
 
     def get_iso_numeric(country_name):
