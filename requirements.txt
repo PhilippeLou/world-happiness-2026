@@ -5,3 +5,5 @@ seaborn
 plotly
 numpy
 pycountry
+altair
+vega-datasets

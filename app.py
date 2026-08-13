@@ -329,7 +329,7 @@ st.write(
     "and perceptions of corruption typically show weaker correlations."
 )
 
-BLUE = "#1C8CF5"  # matches the reference image's blue
+BLUE = "#1CBCF5"  # matches the reference image's blue
 
 st.subheader("GDP per Capita vs. Happiness Score")
 
